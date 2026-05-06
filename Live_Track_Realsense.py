@@ -1,14 +1,10 @@
 import cv2
 import numpy as np
-import supervision as sv
 from ultralytics import YOLO
 import pyrealsense2 as rs
 from collections import defaultdict
 
 model = YOLO("runs/detect/train/weights/best.pt")
-
-bounding_box_annotator = sv.BoxAnnotator()
-label_annotator = sv.LabelAnnotator()
 
 pipeline = rs.pipeline()
 config = rs.config()
@@ -19,7 +15,7 @@ pipeline.start(config)
 
 class_counts = defaultdict(set)
 frame_count = {}
-min_frames = 5
+min_frames = 30
 
 class_colours = {
     "Leaves":(0,255,0),
@@ -66,7 +62,7 @@ while True:
         for box, track_id in zip(boxes, boxes.id):
             track_id = int(track_id.item())
             coords = box.xyxy.cpu().numpy().flatten()
-            x1, x2, y1, y2 = map(int, coords)
+            x1, y1, x2, y2 = map(int, coords)
             cx = int((x1 + x2) /2 )
             cy = int((y1 + y2) /2 )
 
